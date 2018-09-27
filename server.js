@@ -41,7 +41,7 @@ app.get("/scrape", function(req, res) {
     const $ = cheerio.load(response.data);
 
     // Now, we grab every h2 within an article tag, and do the following:
-    $("section h3").each(function(i, element) {
+    $("section h3,a").each(function(i, element) {
       // Save an empty result object
       const result = {};
 
@@ -54,7 +54,7 @@ app.get("/scrape", function(req, res) {
         .attr("href");
         result.summary = $(this)
         .children("a")
-        .text("p");
+        .text();
 
       // Create a new Article using the `result` object built from scraping
       db.Article.create(result)
