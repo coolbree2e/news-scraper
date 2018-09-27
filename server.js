@@ -1,21 +1,21 @@
-var express = require("express");
-var bodyParser = require("body-parser");
-var logger = require("morgan");
-var mongoose = require("mongoose");
-
+const express = require("express");
+const bodyParser = require("body-parser");
+const logger = require("morgan");
+const mongoose = require("mongoose");
+const handle = require("express-handlebars");
 // Our scraping tools
 // Axios is a promised-based http library, similar to jQuery's Ajax method
 // It works on the client and on the server
-var axios = require("axios");
-var cheerio = require("cheerio");
+const axios = require("axios");
+const cheerio = require("cheerio");
 
 // Require all models
-var db = require("./models");
+const db = require("./models");
 
-var PORT = 3000;
+const PORT = 3000;
 
 // Initialize Express
-var app = express();
+const app = express();
 
 // Configure middleware
 
@@ -28,7 +28,9 @@ app.use(express.static("public"));
 
 // Connect to the Mongo DB
 mongoose.connect("mongodb://localhost/appScraper", { useNewUrlParser: true });
-
+// Sets handlebars as the default enginge
+app.engine("handlebars", handle({ defaultLayout: "main" }));
+app.set("view engine", "handlebars");
 // Routes
 
 // A GET route for scraping the echoJS website
@@ -36,12 +38,12 @@ app.get("/scrape", function(req, res) {
   // First, we grab the body of the html with request
   axios.get("http://www.medium.com/topic/science/").then(function(response) {
     // Then, we load that into cheerio and save it to $ for a shorthand selector
-    var $ = cheerio.load(response.data);
+    const $ = cheerio.load(response.data);
 
     // Now, we grab every h2 within an article tag, and do the following:
     $("section h3").each(function(i, element) {
       // Save an empty result object
-      var result = {};
+      const result = {};
 
       // Add the text, href and summary of every link, and save them as properties of the result object
       result.title = $(this)
